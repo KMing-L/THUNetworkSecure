@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+{% autoescape false %}
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Web安全实验</title>
+  </head>
+
+  <body>
+
+    <!-- Header -->
+    <header>
+      <h1>转账</h1>
+    </header>
+
+    <h1>转账页面</h1>
+
+    <form action="{{ url_for('transfer') }}" method="post">
+      <label>待转入账户：</label>
+      <input type="text" name="username" placeholder="输入转入账户"/>
+      <label>转账金额：</label>
+      <input type="text" name="amount" placeholder="输入转账金额"/>
+      <input type="submit" value="转账"/>
+    </form>
+
+    <h3>转账信息：{{ get_flashed_messages()[0] }}</h3>
+
+  </body>
+</html>
+{% endautoescape %}

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+{% autoescape false %}
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Web安全实验</title>
+  </head>
+
+  <body>
+
+    <!-- Header -->
+    <header>
+      <h1>Web安全实验</h1>
+      <h2>XSS 攻击模拟</h2>
+      <p>你可以查询并且发布评论</p>
+    </header>
+
+    <!-- Search form -->
+    <form method="GET">
+      <input type="text" name="q" 
+             placeholder="搜索内容" autocomplete="off" />
+      <input type="submit" value="提交" />
+    </form>
+
+    <!-- Comments -->
+    {% if not search_query %}
+      <h3>所有的评论如下:</h3>
+    {% else %}
+      <h3>包含 "{{ search_query }}" 评论如下:</h3>
+    {% endif %}
+
+    {% for comment in comments %}
+      <div>
+        <p>{{ comment }}</p>
+      </div>
+    {% endfor %}
+
+    <!-- Write form -->
+    <form action="/" method="POST">
+      <input type="text" name="comment" 
+             placeholder="评论" autocomplete="off" />
+      <input type="submit" value="提交新评论" />
+    </form>
+
+    <h2>SQL 注入攻击演示：</h2>
+
+    <h3>register</h3>
+    <form action="{{ url_for('register') }}" method="POST">
+      <input type="text" name="username" 
+             placeholder="用户名" autocomplete="off" />
+      <input type="password" name="password" 
+             placeholder="密码" autocomplete="off" />
+      <input type="submit" value="注册" />
+    </form>
+
+    <h3>login</h3>
+    <form action="{{ url_for('login') }}" method="POST">
+      <input type="text" name="username" 
+             placeholder="用户名" autocomplete="off" />
+      <input type="password" name="password" 
+             placeholder="密码" autocomplete="off" />
+      <input type="submit" value="登录" />
+    </form>
+
+    <h3>注册&登录结果：{{ get_flashed_messages()[0] }}</h3>
+
+    <h2>CSRF 攻击模拟</h2>
+
+    <h3>sudoLogin</h3>
+
+    <form action="{{ url_for('sudo_login') }}" method="POST">
+      <input type="text" name="username" 
+             placeholder="用户名" autocomplete="off" />
+      <input type="password" name="password" 
+             placeholder="密码" autocomplete="off" />
+      <input type="submit" value="登录" />
+    </form>
+
+    <h3>诱骗信息</h3>
+
+    <form action="{{ url_for('transfer') }}" method="POST">
+      <input type="hidden" name="username" value="attacker" />
+      <input type="hidden" name="amount" value="1000000" />
+      <input type="submit" value="下一页" />
+    </form>
+  </body>
+</html>
+{% endautoescape %}
